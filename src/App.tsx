@@ -1,25 +1,29 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { useEffect } from "react";
+import TextInput from "./components/TextIntput";
+import { Form, FormInput, validators } from "./forms";
 
 function App() {
+  const form = new Form({
+    formInput: new FormInput<string>("tes", [
+      validators.minLength(3),
+      validators.email,
+    ]),
+  });
+  useEffect(() => {
+    form.inputs.formInput.onChange((value) =>
+      console.log("Parent: Input changed: ", value)
+    );
+    form.onChange((value) => {
+      console.log("Form value changed", value);
+    });
+  }, []);
+  console.log(form);
+  setTimeout(() => console.log(form.value), 5000);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <TextInput formInput={form.inputs.formInput} />
+    </>
   );
 }
 
