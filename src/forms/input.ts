@@ -18,7 +18,15 @@ interface Protected<V> {
   focused: boolean;
   blurred: boolean;
   onChangeCallbacks: ((value: V) => void)[];
+  onDirtCallbacks: ((value: boolean) => void)[];
+  onTouchCallbacks: ((value: boolean) => void)[];
+  onFocusCallbacks: ((value: boolean) => void)[];
+  onBlurCallbacks: ((value: boolean) => void)[];
   changeHandler: (value: V) => void;
+  dirtHandler: (value: boolean) => void;
+  touchHandler: (value: boolean) => void;
+  focusHandler: (value: boolean) => void;
+  blurHandler: (value: boolean) => void;
   checkValidity: () => void;
 }
 
@@ -29,6 +37,8 @@ export default class FormInput<V> {
 
   set value(value: V) {
     this._protected.value = value;
+    this.touched = true;
+    this.dirty = true;
     this._protected.checkValidity();
     this._protected.changeHandler(this._protected.value);
   }
@@ -39,7 +49,7 @@ export default class FormInput<V> {
 
   set dirty(dirty: boolean) {
     this._protected.dirty = dirty;
-    this.onDirt(this._protected.dirty);
+    this._protected.dirtHandler(this._protected.dirty);
   }
 
   get touched(): boolean {
@@ -48,7 +58,7 @@ export default class FormInput<V> {
 
   set touched(touched: boolean) {
     this._protected.touched = touched;
-    this.onTouch(this._protected.touched);
+    this._protected.touchHandler(this._protected.dirty);
   }
 
   get focused(): boolean {
@@ -57,7 +67,7 @@ export default class FormInput<V> {
 
   set focused(focused: boolean) {
     this._protected.focused = focused;
-    this.onFocus(this._protected.focused);
+    this._protected.focusHandler(this._protected.focused);
   }
 
   get blurred(): boolean {
@@ -66,7 +76,7 @@ export default class FormInput<V> {
 
   set blurred(blurred: boolean) {
     this._protected.blurred = blurred;
-    this.onBlur(this._protected.blurred);
+    this._protected.blurHandler(this._protected.blurred);
   }
 
   get valid(): boolean {
@@ -83,13 +93,21 @@ export default class FormInput<V> {
     this._protected.onChangeCallbacks.push(callback);
   }
 
-  onDirt(dirt: boolean): void {}
+  onDirt(callback: (value: boolean) => void): void {
+    this._protected.onDirtCallbacks.push(callback);
+  }
 
-  onTouch(touch: boolean): void {}
+  onTouch(callback: (value: boolean) => void): void {
+    this._protected.onTouchCallbacks.push(callback);
+  }
 
-  onFocus(focus: boolean): void {}
+  onFocus(callback: (value: boolean) => void): void {
+    this._protected.onFocusCallbacks.push(callback);
+  }
 
-  onBlur(blur: boolean): void {}
+  onBlur(callback: (value: boolean) => void): void {
+    this._protected.onBlurCallbacks.push(callback);
+  }
 
   reset(): void {
     this._protected.value = this._protected.defaultValue;
@@ -98,10 +116,10 @@ export default class FormInput<V> {
     this._protected.focused = false;
     this._protected.blurred = true;
     this._protected.changeHandler(this._protected.value);
-    this.onDirt(this._protected.dirty);
-    this.onTouch(this._protected.touched);
-    this.onFocus(this._protected.focused);
-    this.onBlur(this._protected.blurred);
+    this._protected.dirtHandler(this._protected.dirty);
+    this._protected.touchHandler(this._protected.touched);
+    this._protected.focusHandler(this._protected.focused);
+    this._protected.blurHandler(this._protected.blurred);
   }
 
   constructor(value: V, validators: Validator<V>[] = []) {
@@ -115,8 +133,24 @@ export default class FormInput<V> {
       focused: false,
       blurred: true,
       onChangeCallbacks: [],
+      onDirtCallbacks: [],
+      onTouchCallbacks: [],
+      onFocusCallbacks: [],
+      onBlurCallbacks: [],
       changeHandler: (value) => {
         this._protected.onChangeCallbacks.forEach((fn) => fn(value));
+      },
+      dirtHandler: (value) => {
+        this._protected.onDirtCallbacks.forEach((fn) => fn(value));
+      },
+      touchHandler: (value) => {
+        this._protected.onTouchCallbacks.forEach((fn) => fn(value));
+      },
+      focusHandler: (value) => {
+        this._protected.onFocusCallbacks.forEach((fn) => fn(value));
+      },
+      blurHandler: (value) => {
+        this._protected.onBlurCallbacks.forEach((fn) => fn(value));
       },
       checkValidity: () => {
         this._protected.message = "";

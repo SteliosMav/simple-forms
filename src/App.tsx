@@ -4,25 +4,25 @@ import { Form, FormInput, validators } from "./forms";
 
 function App() {
   const form = new Form({
-    formInput: new FormInput<string>("tes", [
+    email: new FormInput<string>("tes", [
       validators.minLength(3),
       validators.email,
     ]),
   });
   useEffect(() => {
-    form.inputs.formInput.onChange((value) =>
+    form.inputs.email.onChange((value) =>
       console.log("Parent: Input changed: ", value)
     );
     form.onChange((value) => {
-      console.log("Form value changed", value);
+      console.log("Form value changed", value, form);
     });
   }, []);
   console.log(form);
-  setTimeout(() => console.log(form.value), 5000);
+  setTimeout(() => (form.inputs.email.value = "ye@gmail.com"), 5000);
 
   return (
     <>
-      <TextInput formInput={form.inputs.formInput} />
+      <TextInput formInput={form.inputs.email} />
     </>
   );
 }

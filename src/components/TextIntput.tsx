@@ -17,6 +17,7 @@ const TextInput = ({ formInput }: TextInputProps) => {
   useEffect(() => {
     formInput.onChange((value) => {
       setValue(value);
+      formInput.dirty = true;
       setDirty(true);
       setValid(formInput.valid);
       setMessage(formInput.message);

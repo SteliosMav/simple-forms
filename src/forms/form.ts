@@ -14,7 +14,10 @@ export default class Form<V extends FormValue> extends FormInput<any> {
     for (const entries of Object.entries(inputs)) {
       const [key, input] = entries as [keyof V, FormInput<V[keyof V]>];
       input.onChange((value) => (this.value = { ...this.value, [key]: value }));
-      // input.onBlur(() => (this.blurred = true));
+      input.onDirt(() => (this.dirty = true));
+      input.onTouch(() => (this.touched = true));
+      input.onFocus(() => (this.focused = true));
+      input.onBlur(() => (this.blurred = true));
     }
   }
 }
