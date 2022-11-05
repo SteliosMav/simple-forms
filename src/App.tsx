@@ -8,6 +8,14 @@ function App() {
       validators.minLength(3),
       validators.email,
     ]),
+    password: new FormInput<string>("tes", [
+      validators.minLength(3),
+      validators.email,
+    ]),
+    name: new FormInput<string>("tes", [
+      validators.minLength(3),
+      validators.email,
+    ]),
   });
   useEffect(() => {
     form.inputs.email.onChange((value) =>

@@ -19,10 +19,21 @@ export default class Form<V extends FormValue> extends FormInput<any> {
       input.onFocus(() => (this.focused = true));
       input.onBlur(() => (this.blurred = true));
     }
+    delete (this as Partial<FormValue>).validators;
+    this._protected.checkValidity = () => {
+      for (let input of Object.values(this.inputs)) {
+        if (!input.valid) {
+          this._protected.valid = false;
+          this._protected.message = input.message;
+          break;
+        }
+      }
+    };
+    this._protected.checkValidity();
   }
 }
 
-function getFormValue<V>(inputs: Inputs<V>) {
+function getFormValue<V>(inputs: Inputs<V>): V {
   const formValue: V = {} as V;
   for (const entries of Object.entries(inputs)) {
     const [key, input] = entries as [keyof V, FormInput<V[keyof V]>];
